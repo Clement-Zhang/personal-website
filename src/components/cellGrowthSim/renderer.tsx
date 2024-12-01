@@ -17,12 +17,24 @@ class Renderer {
         this.grid = grid
         this.tracker = tracker
     }
-    animate() {
+    animate(track: boolean = false) {
         let deltaTime = Date.now() - this.prevFrameTime!
+        let gridTime: DOMHighResTimeStamp | undefined
+        let frameTime: DOMHighResTimeStamp | undefined
+        if (track) {
+            gridTime = performance.now()
+        }
         this.grid.update(deltaTime)
+        if (track) {
+            this.tracker.gridCall(performance.now() - gridTime!)
+            frameTime = performance.now()
+        }
         this.frame()
+        if (track) {
+            this.tracker.frameDraw(performance.now() - frameTime!)
+        }
         this.prevFrameTime = Date.now()
-        this.prevFrameId = requestAnimationFrame(this.animate.bind(this))
+        this.prevFrameId = requestAnimationFrame(this.animate.bind(this, track))
     }
     frame() {
         this.drawGrid()
@@ -156,9 +168,9 @@ class Renderer {
         this.trackerContext!.fillStyle = Graph.DATA_COLOUR
         this.trackerContext!.strokeStyle = Graph.DATA_COLOUR
     }
-    play() {
+    play(track: boolean = false) {
         this.prevFrameTime = Date.now()
-        this.prevFrameId = requestAnimationFrame(this.animate.bind(this))
+        this.prevFrameId = requestAnimationFrame(this.animate.bind(this, track))
     }
     pause() {
         cancelAnimationFrame(this.prevFrameId!)
@@ -171,6 +183,15 @@ class Renderer {
         this.trackerContext!.clearRect(0, 0, Graph.WIDTH, Graph.HEIGHT)
         let [, , time, topCells] = this.tracker.gridData
         this.setGraph(time, topCells)
+    }
+    startTrack() {
+        this.pause()
+        this.play(true)
+    }
+    stopTrack() {
+        this.pause()
+        console.log(this.tracker.gridStats(), this.tracker.frameStats())
+        this.play()
     }
 }
 

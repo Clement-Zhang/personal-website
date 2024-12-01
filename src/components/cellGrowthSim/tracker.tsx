@@ -6,12 +6,16 @@ class Tracker {
     timeCapacity: number
     topCells: number
     extend: boolean
+    gridUpdates: DOMHighResTimeStamp[]
+    frameDraws: DOMHighResTimeStamp[]
     constructor() {
         this.cellData = []
         this.timeElapsed = 0
         this.timeCapacity = Graph.INITIAL_X_SIZE
         this.topCells = Graph.INITIAL_Y_SIZE
         this.extend = false
+        this.gridUpdates = []
+        this.frameDraws = []
     }
     updateCellCount(deltaTime: number, cellCount: number) {
         this.timeElapsed += deltaTime
@@ -58,6 +62,18 @@ class Tracker {
         this.timeCapacity = Graph.INITIAL_X_SIZE
         this.topCells = Graph.INITIAL_Y_SIZE
         this.extend = false
+    }
+    gridCall(time: DOMHighResTimeStamp){
+        this.gridUpdates.push(time)
+    }
+    gridStats(){
+        return this.gridUpdates.reduce((acc, val) => acc + val) / this.gridUpdates.length
+    }
+    frameDraw(time: DOMHighResTimeStamp){
+        this.frameDraws.push(time)
+    }
+    frameStats(){
+        return this.frameDraws.reduce((acc, val) => acc + val) / this.frameDraws.length
     }
     get gridData(): [[number, number][], boolean, number, number] {
         let extend = this.extend

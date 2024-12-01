@@ -72,6 +72,12 @@ const Sim = () => {
         element.src = play
         renderer.current!.reset()
     }
+    function startTracking() {
+        renderer.current!.startTrack()
+    }
+    function stopTracking() {
+        renderer.current!.stopTrack()
+    }
     return (
         <div style={{ display: "flex" }}>
             <div style={{ flex: "25%" }}>
@@ -98,6 +104,8 @@ const Sim = () => {
                     <input type="number" name="lifespan" min={.1} step={.1} value={controls.lifespan || 2} onChange={adjust} />
                 </form>
                 <p>When Cell Lifespan is an integer multiple of Division Time, cells will <em>not</em> divide for that last stretch of time before it dies.</p>
+                <p onClick={startTracking}>start tracking</p>
+                <p onClick={stopTracking}>stop tracking</p>
             </div>
             <div style={{ flex: "50%" }}>
                 <canvas
